@@ -3,12 +3,6 @@
 
 This project provides a graphical user interface (GUI) application for processing and viewing images of herbarium specimens. The application allows users to easily load, view, and manipulate images, making it an essential tool for botanists and researchers working with herbarium collections.
 
-## Features
-
-- Load and view herbarium specimen images.
-- Process images to enhance visibility and detail.
-- User-friendly GUI with a splash screen and intuitive navigation.
-
 ## Requirements
 
 To run this project, you'll need to have the following packages installed:
@@ -48,13 +42,48 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
+
+## Setting Up a Python Virtual Environment (venv)
+
+It's recommended to use a virtual environment to manage your project dependencies. Follow these steps to set up a virtual environment:
+
+1. Create a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+2. Activate the virtual environment:
+
+- On Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+- On macOS and Linux:
+
+```bash
+source venv/bin/activate
+```
+
+3. Install the required dependencies within the virtual environment:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## In GUI
 
+1. For URL's of images: URL's must lead to full size image directly. (Find example in inputs/image URL test.txt)
 
+2. API key File: As of version 1.0 Only Anthropics Claude is usable.
 
+3. Prompts in Inputs/Prompts.
+Dropdown will refresh after choosing folder.
 
-
+4. Output File must be .txt 
 
 ## Acknowledgements
 
-Special thanks to all contributors and the open-source community for their invaluable work and support.
+Special thanks to Matt Von Konrat, Jeff Gwillam, Dan Stielle, and the Field Museum.
