@@ -1,0 +1,8 @@
+anthropic
+numpy
+pandas
+requests
+pillow
+openai
+tkinter
+ttkbootstrap
