@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 class SplashScreen:
     def __init__(self, master):
         self.master = master
-        self.master.title("Splash Screen")
+        self.master.title("Field Museum Image Parser")
         self.master.geometry("400x400")
         self.master.resizable(False, False)
         master.iconbitmap('images/logo.ico')
@@ -31,7 +31,7 @@ class SplashScreen:
         self.text_label.pack(pady=20)
 
         self.text_label2 = ttk.Label(self.master, text="Version: 1.0")
-        self.text_label2.pack(pady=20)
+        self.text_label2.pack(pady=10)
 
         
 

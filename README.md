@@ -17,6 +17,13 @@ To run this project, you'll need to have the following packages installed:
 - tkinter
 - ttkbootstrap
 
+## Future Updates
+
+- [ ] Window for .CSV editing.
+- [ ] Support for Open AI and Local LLM's 
+- [ ] Containerize and have executable 
+
+
 You can install these dependencies using the following command:
 
 ```bash
@@ -44,7 +51,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Setting Up a Python Virtual Environment (venv)
+## Setting Up a Python Virtual Environment (venv) (Optional)
 
 It's recommended to use a virtual environment to manage your project dependencies. Follow these steps to set up a virtual environment:
 
@@ -87,4 +94,4 @@ Dropdown will refresh after choosing folder.
 
 ## Acknowledgements
 
-Special thanks to Matt Von Konrat, Jeff Gwillam, Dan Stielle, and the Field Museum.
+Special thanks to Matt Von Konrat, Jeff Gwillam, Dan Stille, Rick Ree and the Field Museum.

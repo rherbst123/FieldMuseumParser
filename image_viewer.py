@@ -8,6 +8,7 @@ class FullScreenImage:
         self.original_image = image
         self.top = tk.Toplevel(master)
         self.top.title("Adjustable Image Viewer")
+        master.iconbitmap('images/logo.ico')
         
         screen_width = self.top.winfo_screenwidth()
         screen_height = self.top.winfo_screenheight()

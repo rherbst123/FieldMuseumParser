@@ -16,7 +16,7 @@ from ttkbootstrap.icons import Icon
 
 class ImageProcessorGUI:
    
-
+    # if you are seeing this...go away...
     def __init__(self, master):
 
     
@@ -61,7 +61,7 @@ class ImageProcessorGUI:
         ttk.Button(input_frame,bootstyle = "success", text="Save As", command=self.save_as).grid(row=4, column=2, padx=5, pady=5)
 
 
-        ttk.Button(master,bootstyle = "success", text="Process Images", command=self.process_images).pack(pady=10)
+        ttk.Button(master,bootstyle = "success", text="Process Images", command=self.process_images).pack(pady=5)
 
         output_frame = ttk.LabelFrame(master, text="Output")
         output_frame.pack(padx=10, pady=10, fill="both", expand=True)
@@ -82,17 +82,17 @@ class ImageProcessorGUI:
         nav_frame.pack(pady=10)
 
         self.prev_button = ttk.Button(nav_frame,bootstyle = "success", text="Previous", command=self.show_previous_image, state=tk.DISABLED)
-        self.prev_button.grid(row=0, column=0, padx=5)
+        self.prev_button.grid(row=0, column=0, padx=5, pady = 5)
 
         self.next_button = ttk.Button(nav_frame,bootstyle = "success", text="Next", command=self.show_next_image, state=tk.DISABLED)
-        self.next_button.grid(row=0, column=1, padx=5)
+        self.next_button.grid(row=0, column=1, padx=5, pady = 5)
 
         self.final_output = tk.Text(master, wrap="word", width=80, height=10)
-        self.final_output.pack(padx=10, pady=10, fill="both", expand=True)
+        self.final_output.pack(padx=10, pady=5, fill="both", expand=True)
 
         #toggle theme
         self.toggle_theme_button = ttk.Button(master, bootstyle="success", text="Toggle Theme", command=self.toggle_theme)
-        self.toggle_theme_button.pack(pady=10)
+        self.toggle_theme_button.pack(pady=5)
 
     def browse_url_file(self):
         file = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
@@ -126,6 +126,7 @@ class ImageProcessorGUI:
             self.output_file_entry.delete(0, tk.END)
             self.output_file_entry.insert(0, file)
             self.output_file = file
+            
 
   
     def process_images(self):
@@ -232,7 +233,7 @@ class ImageProcessorGUI:
 
     def display_image(self, image):
         display_image = image.copy()
-        display_image.thumbnail((400, 400))
+        display_image.thumbnail((200, 300))
         photo = ImageTk.PhotoImage(display_image)
         
         self.image_label.config(image=photo)
