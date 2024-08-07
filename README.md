@@ -1,5 +1,6 @@
 
 # Herbarium Specimen Image Processor
+## Version 1.0
 
 This project provides a graphical user interface (GUI) application for processing and viewing images of herbarium specimens. The application allows users to easily load, view, and manipulate images, making it an essential tool for botanists and researchers working with herbarium collections.
 
