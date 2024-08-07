@@ -78,7 +78,7 @@ pip install -r requirements.txt
 
 1. For URL's of images: URL's must lead to full size image directly. (Find example in inputs/image URL test.txt)
 
-2. API key File: As of version 1.0 Only Anthropics Claude is usable.
+2. API key File: As of version 1.0 Only Anthropics Claude is usable. (Must be in .txt file)
 
 3. Prompts in Inputs/Prompts.
 Dropdown will refresh after choosing folder.
