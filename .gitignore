@@ -1,2 +1,4 @@
 
 *.pyc
+__pycache__/image_processor_gui.cpython-312.pyc
+__pycache__/image_viewer.cpython-312.pyc
