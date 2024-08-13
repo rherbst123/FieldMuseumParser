@@ -20,13 +20,12 @@ class SplashScreen:
         center_y = int(screen_height / 2 - window_height / 2)
 
         self.master.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
-
+        # Adding Field museum images
         img = ImageTk.PhotoImage(Image.open("images/splash_image.png"))
         self.img_label = ttk.Label(self.master, image=img)
         self.img_label.image = img
         self.img_label.pack()
 
-        # Display additional text
         self.text_label = ttk.Label(self.master, text="Created: By Riley Herbst ")
         self.text_label.pack(pady=20)
 

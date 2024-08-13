@@ -195,6 +195,7 @@ class CSVProcessor:
         if url_match:
             result["URL"] = url_match.group(1)
 
+        # TODO make this more varibale and less hardcoded
         fields = [
             "verbatimCollectors",
             "collectedBy",

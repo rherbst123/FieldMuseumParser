@@ -14,13 +14,13 @@ import sys
 from image_viewer import FullScreenImage
 from ttkbootstrap.icons import Icon
 from csv_processor_gui import CSVProcessor
+import threading
+import queue
 
 
 class ImageProcessorGUI:
 
-    # if you are seeing this...go away...
     def __init__(self, master):
-
         self.master = master
         master.title("Field Museum Herbarium Parser")
         master.geometry("800x800")
@@ -30,6 +30,9 @@ class ImageProcessorGUI:
         self.processed_images = []
         self.processed_outputs = []
         self.output_file = ""
+
+        self.task_queue = queue.Queue()
+        self.result_queue = queue.Queue()
 
         input_frame = ttk.LabelFrame(master, text="Input Settings")
         input_frame.pack(padx=10, pady=10, fill="x")
@@ -142,7 +145,6 @@ class ImageProcessorGUI:
         self.final_output = tk.Text(master, wrap="word", width=80, height=10)
         self.final_output.pack(padx=10, pady=5, fill="both", expand=True)
 
-        # toggle theme
         self.toggle_theme_button = ttk.Button(
             nav_frame,
             bootstyle="success",
@@ -151,7 +153,6 @@ class ImageProcessorGUI:
         )
         self.toggle_theme_button.grid(row=0, column=2, padx=5, pady=4)
 
-        # csv winow i named wrong and dont want to change
         self.toggle_theme_button2 = ttk.Button(
             nav_frame,
             bootstyle="success",
@@ -228,8 +229,6 @@ class ImageProcessorGUI:
             )
             return
 
-        client = anthropic.Anthropic(api_key=api_key)
-
         try:
             with open(url_file, "r", encoding="utf-8") as url_file:
                 urls = url_file.readlines()
@@ -241,14 +240,24 @@ class ImageProcessorGUI:
         self.processed_outputs.clear()
         self.current_image_index = 0
 
+        # Create and start the worker thread
+        worker_thread = threading.Thread(
+            target=self.process_images_thread, args=(urls, api_key, prompt_text)
+        )
+        worker_thread.start()
+
+        # Start a periodic check for results
+        self.master.after(100, self.check_results)
+
+    def process_images_thread(self, urls, api_key, prompt_text):
+        client = anthropic.Anthropic(api_key=api_key)
+
         for index, url in enumerate(urls):
             url = url.strip()
             try:
                 response = requests.get(url)
                 response.raise_for_status()
                 image = Image.open(BytesIO(response.content))
-
-                self.processed_images.append(image)
 
                 buffered = BytesIO()
                 image.save(buffered, format="JPEG")
@@ -280,26 +289,38 @@ class ImageProcessorGUI:
                 output = self.format_response(
                     f"Image {index + 1}", message.content, url
                 )
-                self.processed_outputs.append(output)
-
-                self.final_output.insert(tk.END, output + "\n" + "=" * 50 + "\n")
+                self.result_queue.put((image, output))
 
             except requests.exceptions.RequestException as e:
                 error_message = f"Error processing image {index + 1}: {str(e)}"
-                self.processed_outputs.append(error_message)
-                self.final_output.insert(tk.END, error_message + "\n" + "=" * 50 + "\n")
+                self.result_queue.put((None, error_message))
 
-            self.master.update_idletasks()
+        # Signal that all processing is complete
+        self.result_queue.put((None, None))
 
-        if self.processed_images:
-            self.show_image(0)
-            self.prev_button.config(state=tk.NORMAL)
-            self.next_button.config(state=tk.NORMAL)
+    def check_results(self):
+        try:
+            image, output = self.result_queue.get_nowait()
+            if image is None and output is None:
+                # All processing is complete
+                self.show_completion_message(self.output_file)
+                return
 
-        self.show_completion_message(output_file)
+            if image:
+                self.processed_images.append(image)
+            self.processed_outputs.append(output)
+            self.final_output.insert(tk.END, output + "\n" + "=" * 50 + "\n")
 
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(self.final_output.get("1.0", tk.END))
+            if len(self.processed_images) == 1:
+                self.show_image(0)
+                self.prev_button.config(state=tk.NORMAL)
+                self.next_button.config(state=tk.NORMAL)
+
+        except queue.Empty:
+            pass
+
+        # Schedule the next check
+        self.master.after(100, self.check_results)
 
     def format_response(self, image_name, response_data, url):
         text_block = response_data[0].text
@@ -346,6 +367,9 @@ class ImageProcessorGUI:
         )
 
     def show_completion_message(self, output_file):
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(self.final_output.get("1.0", tk.END))
+
         msg_box = tk.messagebox.askyesno(
             "Processing Complete",
             f"All images processed. Results saved to {output_file}.\n\n"
