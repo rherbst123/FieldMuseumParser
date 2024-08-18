@@ -53,10 +53,10 @@ class FullScreenImage:
         img_ratio = self.original_image.width / self.original_image.height
         if img_ratio > 1:
             new_width = 1000
-            new_height = int(1000)
+            new_height = int(1000 / img_ratio)
         else:
             new_height = 1000
-            new_width = int(1000)
+            new_width = int(1000 * img_ratio)
 
         new_width = max(1, int(new_width * self.scale))
         new_height = max(1, int(new_height * self.scale))
@@ -73,8 +73,8 @@ class FullScreenImage:
 
         self.canvas.delete("all")
         self.canvas.create_image(
-            width // 2 + self.pan_x,
-            height // 2 + self.pan_y,
+            width // 2 - self.pan_x,
+            height // 2 - self.pan_y,
             image=self.photo,
             anchor=tk.CENTER,
             tags="image",
@@ -94,12 +94,26 @@ class FullScreenImage:
     def zoom(self, event):
         x = self.canvas.canvasx(event.x)
         y = self.canvas.canvasy(event.y)
-        factor = 0.9 if event.delta < 0 else 1.1
-        self.scale *= factor
-        self.scale = max(0.01, min(self.scale, 5.0))
-        self.canvas.scale("all", x, y, factor, factor)
-        self.pan_x *= factor
-        self.pan_y *= factor
+
+        # Determine zoom direction
+        if event.delta > 0:
+            factor = 1.1
+        else:
+            factor = 0.9
+
+        # Calculate new scale
+        new_scale = self.scale * factor
+        new_scale = max(0.01, min(new_scale, 5.0))
+
+        # Calculate the offset to keep the point under the cursor in the same place
+        offset_x = (x - self.pan_x) * (1 - factor)
+        offset_y = (y - self.pan_y) * (1 - factor)
+
+        # Update scale and pan
+        self.scale = new_scale
+        self.pan_x += offset_x
+        self.pan_y += offset_y
+
         self.update_image()
 
     def close(self, event=None):

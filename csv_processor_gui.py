@@ -44,9 +44,12 @@ class CSVProcessor:
             input_frame_csv, bootstyle="success", text="Save As", command=self.save_as
         ).grid(row=4, column=2, padx=5, pady=5)
 
-        ttk.Button(input_frame_csv, text="Process", command=self.process_csv).grid(
-            row=5, column=1, padx=5, pady=5
-        )
+        ttk.Button(
+            input_frame_csv,
+            bootstyle="success",
+            text="Process",
+            command=self.process_csv,
+        ).grid(row=5, column=1, padx=5, pady=5)
 
     def create_viewer_frame(self):
         viewer_frame = ttk.LabelFrame(self.csv_window, text="Viewer")
@@ -67,15 +70,21 @@ class CSVProcessor:
         button_frame = ttk.Frame(self.csv_window)
         button_frame.pack(pady=10)
 
-        ttk.Button(button_frame, text="Add Row", command=self.add_row).pack(
-            side="left", padx=5
-        )
-        ttk.Button(button_frame, text="Delete Row", command=self.delete_row).pack(
-            side="left", padx=5
-        )
-        ttk.Button(button_frame, text="Save Changes", command=self.save_changes).pack(
-            side="left", padx=5
-        )
+        ttk.Button(
+            button_frame, bootstyle="success", text="Add Row", command=self.add_row
+        ).pack(side="left", padx=5)
+        ttk.Button(
+            button_frame,
+            bootstyle="success",
+            text="Delete Row",
+            command=self.delete_row,
+        ).pack(side="left", padx=5)
+        ttk.Button(
+            button_frame,
+            bootstyle="success",
+            text="Save Changes",
+            command=self.save_changes,
+        ).pack(side="left", padx=5)
 
     def browse_csv_file(self):
         file = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])

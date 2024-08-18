@@ -249,6 +249,7 @@ class ImageProcessorGUI:
         # Start a periodic check for results
         self.master.after(100, self.check_results)
 
+    # Part 2 of script. Made it threaded becuase of hook up and (Not Responding in GUI)
     def process_images_thread(self, urls, api_key, prompt_text):
         client = anthropic.Anthropic(api_key=api_key)
 
