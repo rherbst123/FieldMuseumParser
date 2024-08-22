@@ -27,8 +27,14 @@ class ImageProcessorGUI:
         master.geometry("800x800")
         master.iconbitmap("images/logo.ico")
 
+
+        #base varibales
+
+        #for images it starts at 0
         self.current_image_index = 0
+        #create array of images
         self.processed_images = []
+        #and of outputs
         self.processed_outputs = []
         self.output_file = ""
 
@@ -64,9 +70,13 @@ class ImageProcessorGUI:
 
         
         #Setting Default Folder for prompts
+
+        #file path of project Check
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        #default foler, only way I thought to do this proabbly a better way bit if it aint broke dont fix it. Seriously dont fix it.
         default_prompt_folder = os.path.join(script_dir, "Inputs", "prompts")
 
+        #Buttons
         ttk.Label(input_frame, text="Prompt Folder:").grid(
             row=2, column=0, sticky="w", padx=5, pady=5
         )
@@ -197,6 +207,7 @@ class ImageProcessorGUI:
 
     def save_as(self):
         file = filedialog.asksaveasfilename(
+            #Defaults to .txt and makes sure its that even if user doesnt specify
             defaultextension=".txt", filetypes=[("Text files", "*.txt")]
         )
         if file:
