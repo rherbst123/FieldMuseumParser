@@ -62,8 +62,7 @@ class ImageProcessorGUI:
             command=self.browse_api_key_file,
         ).grid(row=1, column=2, padx=5, pady=5)
 
-        
-        #Setting Default Folder for prompts
+        # Setting Default Folder for prompts
         script_dir = os.path.dirname(os.path.abspath(__file__))
         default_prompt_folder = os.path.join(script_dir, "Inputs", "prompts")
 
@@ -71,7 +70,9 @@ class ImageProcessorGUI:
             row=2, column=0, sticky="w", padx=5, pady=5
         )
         self.prompt_folder_entry = ttk.Entry(input_frame, width=50)
-        self.prompt_folder_entry.insert(0, default_prompt_folder)  # Set the default folder path
+        self.prompt_folder_entry.insert(
+            0, default_prompt_folder
+        )  # Set the default folder path
         self.prompt_folder_entry.grid(row=2, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame,
@@ -79,7 +80,6 @@ class ImageProcessorGUI:
             text="Browse",
             command=self.browse_prompt_folder,
         ).grid(row=2, column=2, padx=5, pady=5)
-
 
         ttk.Label(input_frame, text="Prompt:").grid(
             row=3, column=0, sticky="w", padx=5, pady=5
@@ -256,6 +256,8 @@ class ImageProcessorGUI:
 
         # Start a periodic check for results
         self.master.after(100, self.check_results)
+
+    # TODO containerize this so that we can add support for Chat Gpt 4o AND Local Models. Each will have their own files.
 
     # Part 2 of script. Made it threaded becuase of hook up and (Not Responding in GUI)
     def process_images_thread(self, urls, api_key, prompt_text):
