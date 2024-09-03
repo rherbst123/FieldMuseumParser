@@ -94,4 +94,4 @@ Dropdown will refresh after choosing folder.
 
 ## Acknowledgements
 
-Special thanks to Matt Von Konrat, Jeff Gwillam, Dan Stille, Rick Ree and the Field Museum.
+Special thanks to Matt Von Konrat, Jeff Gwillam, Dan Stille, Rick Ree, Felix Grewe, Grangier Bioinformatics Center and the Field Museum.

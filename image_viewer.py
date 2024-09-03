@@ -92,29 +92,39 @@ class FullScreenImage:
         self.pan_y = self.canvas.canvasy(0)
 
     def zoom(self, event):
-        x = self.canvas.canvasx(event.x)
-        y = self.canvas.canvasy(event.y)
-
         # Determine zoom direction
         if event.delta > 0:
             factor = 1.1
         else:
             factor = 0.9
 
-        # Calculate new scale
+        # Calculate the new scale, clamping to avoid extreme values
         new_scale = self.scale * factor
         new_scale = max(0.01, min(new_scale, 5.0))
 
-        # Calculate the offset to keep the point under the cursor in the same place
-        offset_x = (x - self.pan_x) * (1 - factor)
-        offset_y = (y - self.pan_y) * (1 - factor)
+        # Get the mouse position in the image before zooming
+        mouse_x = self.canvas.canvasx(event.x)
+        mouse_y = self.canvas.canvasy(event.y)
 
-        # Update scale and pan
+        # Update scale
         self.scale = new_scale
-        self.pan_x += offset_x
-        self.pan_y += offset_y
+
+        # Calculate the new image size
+        width = self.top.winfo_width()
+        height = self.top.winfo_height()
+        new_img_width = int(self.original_image.width * self.scale)
+        new_img_height = int(self.original_image.height * self.scale)
+
+        # Calculate the new pan position to keep the image centered on the zoom point
+        self.pan_x = mouse_x - (mouse_x - self.pan_x) * factor
+        self.pan_y = mouse_y - (mouse_y - self.pan_y) * factor
+
+        # Ensure the image doesn't go out of bounds after zooming
+        self.pan_x = min(max(self.pan_x, 0), new_img_width - width)
+        self.pan_y = min(max(self.pan_y, 0), new_img_height - height)
 
         self.update_image()
+
 
     def close(self, event=None):
         self.top.destroy()
