@@ -12,6 +12,8 @@ from io import BytesIO
 import subprocess
 import sys
 from image_viewer import FullScreenImage
+from ClaudeImageProcessorThread import ClaudeImageProcessorThread
+from GPTImageProcessorThread import GPTImageProcessorThread
 from ttkbootstrap.icons import Icon
 from csv_processor_gui import CSVProcessor
 import threading
@@ -27,94 +29,102 @@ class ImageProcessorGUI:
         master.geometry("800x800")
         master.iconbitmap("images/logo.ico")
 
-
-        #base varibales
-
-        #for images it starts at 0
+        # Base variables
         self.current_image_index = 0
-        #create array of images
         self.processed_images = []
-        #and of outputs
         self.processed_outputs = []
         self.output_file = ""
 
         self.task_queue = queue.Queue()
         self.result_queue = queue.Queue()
 
+        # Input settings frame
         input_frame = ttk.LabelFrame(master, text="Input Settings")
         input_frame.pack(padx=10, pady=10, fill="x")
 
-        ttk.Label(input_frame, text="URL's of Images").grid(
+        # Select LLM field
+        ttk.Label(input_frame, text="Select LLM").grid(
             row=0, column=0, sticky="w", padx=5, pady=5
         )
+        self.llm_var = tk.StringVar()
+        self.llm_dropdown = ttk.Combobox(
+            input_frame, textvariable=self.llm_var, width=47
+        )
+        self.llm_dropdown['values'] = ['Claude', 'GPT-4']
+        self.llm_dropdown.grid(row=0, column=1, padx=5, pady=5)
+        self.llm_dropdown.set('Claude')  # Set default
+
+        # URL file entry
+        ttk.Label(input_frame, text="URL.txt of Images").grid(
+            row=1, column=0, sticky="w", padx=5, pady=5
+        )
         self.url_file_entry = ttk.Entry(input_frame, width=50)
-        self.url_file_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.url_file_entry.grid(row=1, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame,
             bootstyle="success",
             text="Browse",
             command=self.browse_url_file,
-        ).grid(row=0, column=2, padx=5, pady=5)
+        ).grid(row=1, column=2, padx=5, pady=5)
 
+        # API key file entry
         ttk.Label(input_frame, text="API Key File:").grid(
-            row=1, column=0, sticky="w", padx=5, pady=5
+            row=2, column=0, sticky="w", padx=5, pady=5
         )
         self.api_key_entry = ttk.Entry(input_frame, width=50)
-        self.api_key_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.api_key_entry.grid(row=2, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame,
             bootstyle="success",
             text="Browse",
             command=self.browse_api_key_file,
-        ).grid(row=1, column=2, padx=5, pady=5)
+        ).grid(row=2, column=2, padx=5, pady=5)
 
-        
-        #Setting Default Folder for prompts
-
-        #file path of project Check
+        # Prompt folder entry
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        #default foler, only way I thought to do this proabbly a better way bit if it aint broke dont fix it. Seriously dont fix it.
         default_prompt_folder = os.path.join(script_dir, "Inputs", "prompts")
 
-        #Buttons
         ttk.Label(input_frame, text="Prompt Folder:").grid(
-            row=2, column=0, sticky="w", padx=5, pady=5
+            row=3, column=0, sticky="w", padx=5, pady=5
         )
         self.prompt_folder_entry = ttk.Entry(input_frame, width=50)
         self.prompt_folder_entry.insert(0, default_prompt_folder)  # Set the default folder path
-        self.prompt_folder_entry.grid(row=2, column=1, padx=5, pady=5)
+        self.prompt_folder_entry.grid(row=3, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame,
             bootstyle="success",
             text="Browse",
             command=self.browse_prompt_folder,
-        ).grid(row=2, column=2, padx=5, pady=5)
+        ).grid(row=3, column=2, padx=5, pady=5)
 
-
+        # Prompt file selection
         ttk.Label(input_frame, text="Prompt:").grid(
-            row=3, column=0, sticky="w", padx=5, pady=5
+            row=4, column=0, sticky="w", padx=5, pady=5
         )
         self.prompt_var = tk.StringVar()
         self.prompt_dropdown = ttk.Combobox(
             input_frame, textvariable=self.prompt_var, width=47
         )
-        self.prompt_dropdown.grid(row=3, column=1, padx=5, pady=5)
+        self.prompt_dropdown.grid(row=4, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame,
             bootstyle="success",
             text="Refresh",
             command=self.refresh_prompts,
-        ).grid(row=3, column=2, padx=5, pady=5)
+        ).grid(row=4, column=2, padx=5, pady=5)
+        self.refresh_prompts()
 
+        # Output file entry
         ttk.Label(input_frame, text="Output File:").grid(
-            row=4, column=0, sticky="w", padx=5, pady=5
+            row=5, column=0, sticky="w", padx=5, pady=5
         )
         self.output_file_entry = ttk.Entry(input_frame, width=50)
-        self.output_file_entry.grid(row=4, column=1, padx=5, pady=5)
+        self.output_file_entry.grid(row=5, column=1, padx=5, pady=5)
         ttk.Button(
             input_frame, bootstyle="success", text="Save As", command=self.save_as
-        ).grid(row=4, column=2, padx=5, pady=5)
+        ).grid(row=5, column=2, padx=5, pady=5)
 
+        # Button to process images
         ttk.Button(
             master,
             bootstyle="success",
@@ -141,6 +151,7 @@ class ImageProcessorGUI:
 
         nav_frame = ttk.Frame(master)
         nav_frame.pack(pady=10)
+
 
         self.prev_button = ttk.Button(
             nav_frame,
@@ -179,15 +190,20 @@ class ImageProcessorGUI:
         )
         self.toggle_theme_button2.grid(row=0, column=3, padx=5, pady=4)
 
+        
+
+    #saves then inserts file path, per Wyatts request
     def browse_url_file(self):
         file = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
-        self.url_file_entry.delete(0, tk.END)
-        self.url_file_entry.insert(0, file)
+        if file:
+            self.url_file_entry.delete(0, tk.END)
+            self.url_file_entry.insert(0, file)
 
     def browse_api_key_file(self):
         file = filedialog.askopenfilename()
-        self.api_key_entry.delete(0, tk.END)
-        self.api_key_entry.insert(0, file)
+        if file:
+            self.api_key_entry.delete(0, tk.END)
+            self.api_key_entry.insert(0, file)
 
     def browse_prompt_folder(self):
         folder = filedialog.askdirectory()
@@ -222,9 +238,7 @@ class ImageProcessorGUI:
         prompt_folder = self.prompt_folder_entry.get()
         selected_prompt = self.prompt_var.get()
 
-        if not all(
-            [url_file, output_file, api_key_file, prompt_folder, selected_prompt]
-        ):
+        if not all([url_file, output_file, api_key_file, prompt_folder, selected_prompt]):
             messagebox.showerror("Error", "All fields must be filled.")
             return
 
@@ -243,8 +257,8 @@ class ImageProcessorGUI:
                 prompt_text = prompt_file.read().strip()
         except UnicodeDecodeError:
             messagebox.showerror(
-                "AHHHHH ERROR",
-                f"Unable to read the prompt file: {prompt_path}. Please make sure no special characters are in prompt and keep it NEAT!!",
+                "Error",
+                f"Unable to read the prompt file: {prompt_path}. Please make sure the file is readable.",
             )
             return
 
@@ -259,64 +273,21 @@ class ImageProcessorGUI:
         self.processed_outputs.clear()
         self.current_image_index = 0
 
-        # Create and start the worker thread
-        worker_thread = threading.Thread(
-            target=self.process_images_thread, args=(urls, api_key, prompt_text)
-        )
+        selected_llm = self.llm_var.get()
+
+        if selected_llm == 'Claude':
+            # Create and start the worker thread for Claude
+            processor_thread = ClaudeImageProcessorThread(api_key, prompt_text, urls, self.result_queue)
+        elif selected_llm == 'GPT-4':
+            # Create and start the worker thread for GPT-4
+            processor_thread = GPTImageProcessorThread(api_key, prompt_text, urls, self.result_queue)  # Pass prompt_path instead of prompt_text
+
+
+        worker_thread = threading.Thread(target=processor_thread.process_images)
         worker_thread.start()
 
         # Start a periodic check for results
         self.master.after(100, self.check_results)
-
-    # Part 2 of script. Made it threaded becuase of hook up and (Not Responding in GUI)
-    def process_images_thread(self, urls, api_key, prompt_text):
-        client = anthropic.Anthropic(api_key=api_key)
-
-        for index, url in enumerate(urls):
-            url = url.strip()
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                image = Image.open(BytesIO(response.content))
-
-                buffered = BytesIO()
-                image.save(buffered, format="JPEG")
-                base64_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-                message = client.messages.create(
-                    model="claude-3-5-sonnet-20240620",
-                    max_tokens=2500,
-                    temperature=0,
-                    system="You are an assistant that has a job to extract text from an image and parse it out. Only include the text that is relevant to the image.",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": prompt_text},
-                                {
-                                    "type": "image",
-                                    "source": {
-                                        "type": "base64",
-                                        "media_type": "image/jpeg",
-                                        "data": base64_image,
-                                    },
-                                },
-                            ],
-                        }
-                    ],
-                )
-
-                output = self.format_response(
-                    f"Image {index + 1}", message.content, url
-                )
-                self.result_queue.put((image, output))
-
-            except requests.exceptions.RequestException as e:
-                error_message = f"Error processing image {index + 1}: {str(e)}"
-                self.result_queue.put((None, error_message))
-
-        # Signal that all processing is complete
-        self.result_queue.put((None, None))
 
     def check_results(self):
         try:
