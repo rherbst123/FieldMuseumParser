@@ -1,6 +1,6 @@
 
 # Herbarium Specimen Image Processor
-## Version 1.0
+## Version 1.2
 
 This project provides a graphical user interface (GUI) application for processing and viewing images of herbarium specimens. The application allows users to easily load, view, and manipulate images, making it an essential tool for botanists and researchers working with herbarium collections.
 
@@ -19,9 +19,10 @@ To run this project, you'll need to have the following packages installed:
 
 ## Future Updates
 
-- [ ] Window for .CSV editing.
-- [ ] Support for Open AI and Local LLM's 
-- [ ] Containerize and have executable 
+- [x] Window for .CSV editing.
+- [] Support for Local LLM's
+- [x] Support for Open AI
+- [] Containerize and have executable
 
 
 You can install these dependencies using the following command:
@@ -35,7 +36,7 @@ pip install -r requirements.txt
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/herbarium-image-processor.git
+git clone https://github.com/rherbst123/FieldMuseumParser.git
 cd herbarium-image-processor
 ```
 
@@ -90,7 +91,7 @@ pip install -r requirements.txt
 3. Prompts in Inputs/Prompts.
 Dropdown will refresh after choosing folder.
 
-4. Output File must be .txt 
+4. Output File must be .txt
 
 ## Acknowledgements
 

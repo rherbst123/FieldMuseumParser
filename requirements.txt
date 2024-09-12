@@ -4,5 +4,4 @@ pandas
 requests
 pillow
 openai
-tkinter
 ttkbootstrap

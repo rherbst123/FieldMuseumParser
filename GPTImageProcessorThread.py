@@ -12,6 +12,8 @@ class GPTImageProcessorThread:
         self.urls = urls
         self.result_queue = result_queue
     
+        print("GPTImageProcessor")
+
     def process_images(self):
 
         headers = {
@@ -62,18 +64,21 @@ class GPTImageProcessorThread:
 
                 output = self.format_response(f"Image {index + 1}", response_data, url)
                 self.result_queue.put((image, output))
-
-           
+               
 
             except requests.exceptions.RequestException as e:
                 error_message = f"Error processing image {index + 1}: {str(e)}"
                 
-               
+                self.result_queue.put((None, error_message))
+        #All DOne        
+        self.result_queue.put((None, None))
 
     def format_response(self, image_name, response_data, url):
         if "choices" in response_data and response_data["choices"]:
             content = response_data["choices"][0].get("message", {}).get("content", "")
-            formatted_output = f"{image_name}\nURL: {url}\n\n{content}\n"
+            formatted_result = f"{image_name}\nURL: {url}\n\n{content}\n"
         else:
-            formatted_output = f"{image_name}\nURL: {url}\n\nNo data returned from API.\n"
-        return formatted_output
+            formatted_result = f"{image_name}\nURL: {url}\n\nNo data returned from API.\n"
+        
+        
+        return formatted_result

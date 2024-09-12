@@ -29,8 +29,11 @@ class SplashScreen:
         self.text_label = ttk.Label(self.master, text="Created: By Riley Herbst ")
         self.text_label.pack(pady=20)
 
-        self.text_label2 = ttk.Label(self.master, text="Version: 1.1")
+        self.text_label2 = ttk.Label(self.master, text="Version: 1.2")
         self.text_label2.pack(pady=10)
+
+        self.text_label3 = ttk.Label(self.master, text="Introducing GPT-4o Support")
+        self.text_label3.pack(pady=10)
 
         self.master.after(5000, self.close)
 

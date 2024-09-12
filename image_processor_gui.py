@@ -50,9 +50,9 @@ class ImageProcessorGUI:
         self.llm_dropdown = ttk.Combobox(
             input_frame, textvariable=self.llm_var, width=47
         )
-        self.llm_dropdown['values'] = ['Claude', 'GPT-4']
+        self.llm_dropdown['values'] = ['Claude 3.5 Sonnet', 'GPT-4o']
         self.llm_dropdown.grid(row=0, column=1, padx=5, pady=5)
-        self.llm_dropdown.set('Claude')  # Set default
+        self.llm_dropdown.set('Claude 3.5 Sonnet')  # Set default
 
         # URL file entry
         ttk.Label(input_frame, text="URL.txt of Images").grid(
@@ -275,10 +275,10 @@ class ImageProcessorGUI:
 
         selected_llm = self.llm_var.get()
 
-        if selected_llm == 'Claude':
+        if selected_llm == 'Claude 3.5 Sonnet':
             # Create and start the worker thread for Claude
             processor_thread = ClaudeImageProcessorThread(api_key, prompt_text, urls, self.result_queue)
-        elif selected_llm == 'GPT-4':
+        elif selected_llm == 'GPT-4o':
             # Create and start the worker thread for GPT-4
             processor_thread = GPTImageProcessorThread(api_key, prompt_text, urls, self.result_queue)  # Pass prompt_path instead of prompt_text
 
